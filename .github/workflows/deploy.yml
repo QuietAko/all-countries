@@ -34,3 +34,7 @@ jobs:
             cd ${{ secrets.REMOTE_PATH }}
             docker-compose up -d --build
           "
+      - name: Migrate Up
+        run: |
+          make migrate-up
+

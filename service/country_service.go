@@ -19,7 +19,7 @@ type CountryService struct {
 func NewCountryService(repo *repository.CountryRepository, redis *redis.Client) *CountryService {
 	return &CountryService{
 		repo:  repo,
-		redis: redis, // Инициализируем redis
+		redis: redis,
 	}
 }
 
