@@ -37,6 +37,6 @@ jobs:
         run: |
           ssh -o StrictHostKeyChecking=no ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }} "
             cd ${{ secrets.REMOTE_PATH }} 
-            docker-compose exec -T app sh -c 'migrate -path ./db/migrations -database $DATABASE_URL up'
+            make migrate-up
           "
 
