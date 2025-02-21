@@ -3,7 +3,7 @@ name: Deploy to Server
 on:
   push:
     branches:
-      - master  # Укажите ветку, при пуше в которую будет происходить деплой
+      - master # Укажите ветку, при пуше в которую будет происходить деплой
 
 jobs:
   deploy:
@@ -11,22 +11,26 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        run: |
+          git clone https://github.com/QuietAko/all-countries.git .
+          git checkout $GITHUB_SHA
 
       - name: Install SSH key
-        uses: webfactory/ssh-agent@v0.7.0
-        with:
-          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
-
-      - name: Copy files to server
         run: |
-          scp -r . ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }}:${{ secrets.REMOTE_PATH }}
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan ${{ secrets.REMOTE_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Sync files to server
+        run: |
+          rsync -avz --delete -e "ssh -o StrictHostKeyChecking=no" \
+            . ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }}:${{ secrets.REMOTE_PATH }}
 
       - name: Run Docker Compose on server
         run: |
-          ssh ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }} "
-            cd ${{ secrets.REMOTE_PATH }} &&
-            docker-compose down &&
-            docker-compose pull &&
+          ssh -o StrictHostKeyChecking=no ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }} "
+            set -e  # Выход при ошибке
+            cd ${{ secrets.REMOTE_PATH }}
             docker-compose up -d --build
           "
