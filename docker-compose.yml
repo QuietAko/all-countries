@@ -4,12 +4,12 @@ services:
     image: all-countries
     build: .
     volumes:
-      - ./:/app  # монтируем локальную папку ./app в контейнер в /app
+      - ./:/app
     ports:
       - "8080:8080"
     env_file:
       - .env  
-    command: ["go", "run", "/app/main.go"]  # Запуск приложения напрямую через go run
+    command: ["go", "run", "/app/main.go"] 
 
   nginx:
     image: nginx:latest
