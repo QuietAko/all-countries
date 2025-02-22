@@ -21,19 +21,28 @@ jobs:
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
           ssh-keyscan ${{ secrets.REMOTE_HOST }} >> ~/.ssh/known_hosts
-
       - name: Sync files to server
         run: |
           rsync -avz --delete -e "ssh -o StrictHostKeyChecking=no" \
             . ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }}:${{ secrets.REMOTE_PATH }}
 
-      - name: Run Docker Compose on server
+      - name: Docker down
         run: |
           ssh -o StrictHostKeyChecking=no ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }} "
             cd ${{ secrets.REMOTE_PATH }}
             docker-compose down
+          "
+      - name: Docker build
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }} "
+            cd ${{ secrets.REMOTE_PATH }}
             docker-compose build
-            docker-compose up -d
+          "
+      - name: Docker up
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }} "
+            cd ${{ secrets.REMOTE_PATH }}
+            docker-compose up -d --force-recreate
           "
       - name: Run migrations
         run: |
