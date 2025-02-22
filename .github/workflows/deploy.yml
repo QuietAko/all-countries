@@ -31,7 +31,7 @@ jobs:
         run: |
           ssh -o StrictHostKeyChecking=no ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }} "
             cd ${{ secrets.REMOTE_PATH }}
-            docker-compose up -d --build
+            docker-compose up -d --build --force-recreate
             docker-compose restart
           "
       - name: Run migrations
