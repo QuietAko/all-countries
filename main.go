@@ -6,12 +6,14 @@ import (
 	"all-countries/db"
 	"all-countries/repository"
 	"all-countries/service"
+	"all-countries/metrics"
 	"log"
 	"net/http"
 )
 
 func main() {
-	// Подключаемся к базе данных
+	metrics.Init()
+
 	db, err := db.Connect()
 	if err != nil {
 		log.Fatalf("Ошибка при подключении к базе данных: %v", err)
@@ -22,6 +24,7 @@ func main() {
 	countryService := service.NewCountryService(countryRepo, cache.GetRedisClient())
 	countryController := controller.NewCountryController(countryService)
 
+	http.Handle("/metrics", metrics.Handler())
 	http.HandleFunc("/api/country", countryController.GetAllCountries)
 
 	log.Println("Сервер запущен на http://localhost:8080")

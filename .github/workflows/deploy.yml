@@ -3,7 +3,7 @@ name: Deploy to Server
 on:
   push:
     branches:
-      - master # Укажите ветку, при пуше в которую будет происходить деплой
+      - master 
 
 jobs:
   deploy:
