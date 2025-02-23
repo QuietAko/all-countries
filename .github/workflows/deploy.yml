@@ -35,6 +35,13 @@ jobs:
             docker-compose build
             docker-compose up -d
           "
+      - name: Build frontend
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }} "
+            cd ${{ secrets.REMOTE_PATH }}
+                npm install
+                npm run build
+          "
       - name: Migrations
         run: |
           ssh -o StrictHostKeyChecking=no ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }} "
