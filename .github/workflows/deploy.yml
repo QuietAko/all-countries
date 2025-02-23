@@ -26,25 +26,16 @@ jobs:
           rsync -avz --delete -e "ssh -o StrictHostKeyChecking=no" \
             . ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }}:${{ secrets.REMOTE_PATH }}
 
-      - name: Docker down
-        run: |
-          ssh -o StrictHostKeyChecking=no ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }} "
-            cd ${{ secrets.REMOTE_PATH }}
-            docker-compose down
-          "
       - name: Docker build
         run: |
           ssh -o StrictHostKeyChecking=no ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }} "
             cd ${{ secrets.REMOTE_PATH }}
+            docker network create my-network || true
+            docker-compose down
             docker-compose build
-          "
-      - name: Docker up
-        run: |
-          ssh -o StrictHostKeyChecking=no ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }} "
-            cd ${{ secrets.REMOTE_PATH }}
             docker-compose up -d
           "
-      - name: Run migrations
+      - name: Migrations
         run: |
           ssh -o StrictHostKeyChecking=no ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }} "
             cd ${{ secrets.REMOTE_PATH }} 
