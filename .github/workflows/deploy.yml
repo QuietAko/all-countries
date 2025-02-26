@@ -40,7 +40,6 @@ jobs:
         run: |
           ssh -o StrictHostKeyChecking=no ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }} "
             cd ${{ secrets.REMOTE_PATH }}
-            docker cp /home/deploy/frontend/dist backend_nginx_1:/usr/share/nginx/html
           "
       - name: Migrations
         run: |
